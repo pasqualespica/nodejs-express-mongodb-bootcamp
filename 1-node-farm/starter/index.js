@@ -30,23 +30,21 @@ const url = require("url");
 // SERVER
 
 // Tutto il codice qui viene eseguito SOLO UNA volta !!!! quindi nessun problema
-const replaceTemplate = function(temp, prodcut){
-    let output = temp.replace(/{%PRODUCTNAME%}/g, prodcut.productName);
-    output = output.replace(/{%IMAGE%}/g, prodcut.image);
-    output = output.replace(/{%PRICE%}/g, prodcut.price);
-    output = output.replace(/{%FROM%}/g, prodcut.from);
-    output = output.replace(/{%NUTRIENTS%}/g, prodcut.nutrients);
-    output = output.replace(/{%QUANTITY%}/g, prodcut.quantity);
-    output = output.replace(/{%ID%}/g, prodcut.id);
-    output = output.replace(/{%DESCRIPTION%}/g, prodcut.description);
+const replaceTemplate = function (temp, prodcut) {
+  let output = temp.replace(/{%PRODUCTNAME%}/g, prodcut.productName);
+  output = output.replace(/{%IMAGE%}/g, prodcut.image);
+  output = output.replace(/{%PRICE%}/g, prodcut.price);
+  output = output.replace(/{%FROM%}/g, prodcut.from);
+  output = output.replace(/{%NUTRIENTS%}/g, prodcut.nutrients);
+  output = output.replace(/{%QUANTITY%}/g, prodcut.quantity);
+  output = output.replace(/{%ID%}/g, prodcut.id);
+  output = output.replace(/{%DESCRIPTION%}/g, prodcut.description);
 
-    if (!prodcut.organic) 
-        output = output.replace(/{%NOT_ORGANIC%}/g,"not-organic");
+  if (!prodcut.organic)
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
 
-    return output;
-
-
-}
+  return output;
+};
 
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
@@ -65,23 +63,37 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
+  
+  //   console.log(req.url);
+  console.log(url.parse(req.url, true)); // query string
+  const {query, pathname} = url.parse(req.url, true); // query string
+
+  console.log(pathname)
+  // const pathname = req.url;
 
   // overview page
-  if (pathName === "/overview" || pathName === "/") {
+  if (pathname === "/overview" || pathname === "/") {
     res.writeHead(200, {
       "Content-type": "text/html",
-    });    
-    
-    const cardsHtml = dataObj.map( el => replaceTemplate(tempCard, el)).join('');
-    const output = tempOverview.replace("{%PRODUCT_CARDS%}",cardsHtml);
+    });
+
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(tempCard, el))
+      .join("");
+    const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHtml);
     // console.log(cardsHtml);
     res.end(output);
     // prodcut page
-  } else if (pathName === "/product") {
-    res.end("product ...");
+  } else if (pathname === "/product") {
+    console.log(query);
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });    
+    const product = dataObj[query.id];
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
     //  api
-  } else if (pathName === "/api") {
+  } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-type": "application/json",
     });
