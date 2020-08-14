@@ -1,5 +1,6 @@
 const fs = require("fs");
-const http = require("http")
+const http = require("http");
+const url = require("url");
 
 // /////////////////////////////////////////7
 // FILES
@@ -27,15 +28,24 @@ const http = require("http")
 
 // /////////////////////////////////////////7
 // SERVER
-const server = http.createServer((req, res)=> {
-    console.log(req)
-    res.end("Hello from the server!!!")
+const server = http.createServer((req, res) => {
+  const pathName = req.url;
 
-})
+  if (pathName === "/overview" || pathName === "/") {
+    res.end("overview ...");
+  } else if (pathName === "/product") {
+    res.end("product ...");
+  } else {
+      res.writeHead(404, {
+          'Content-type':'text/html',
+          'my-own-hd': 'hellopas'
+      });
+      res.end('<h1>Page not Found</h1>');
+  }
+});
 
-const PORT=8000
-const HOST='127.0.0.1'
+const PORT = 8000;
+const HOST = "127.0.0.1";
 server.listen(PORT, HOST, () => {
-
-    console.log(`Listening on ${HOST}:${PORT} `)
-})
+  console.log(`Listening on ${HOST}:${PORT} `);
+});
