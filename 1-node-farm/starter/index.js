@@ -2,7 +2,6 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
-
 // /////////////////////////////////////////7
 // FILES
 
@@ -31,28 +30,68 @@ const url = require("url");
 // SERVER
 
 // Tutto il codice qui viene eseguito SOLO UNA volta !!!! quindi nessun problema
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const replaceTemplate = function(temp, prodcut){
+    let output = temp.replace(/{%PRODUCTNAME%}/g, prodcut.productName);
+    output = output.replace(/{%IMAGE%}/g, prodcut.image);
+    output = output.replace(/{%PRICE%}/g, prodcut.price);
+    output = output.replace(/{%FROM%}/g, prodcut.from);
+    output = output.replace(/{%NUTRIENTS%}/g, prodcut.nutrients);
+    output = output.replace(/{%QUANTITY%}/g, prodcut.quantity);
+    output = output.replace(/{%ID%}/g, prodcut.id);
+    output = output.replace(/{%DESCRIPTION%}/g, prodcut.description);
+
+    if (!prodcut.organic) 
+        output = output.replace(/{%NOT_ORGANIC%}/g,"not-organic");
+
+    return output;
+
+
+}
+
+const tempOverview = fs.readFileSync(
+  `${__dirname}/templates/template-overview.html`,
+  "utf-8"
+);
+const tempCard = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  "utf-8"
+);
+const tempProduct = fs.readFileSync(
+  `${__dirname}/templates/template-product.html`,
+  "utf-8"
+);
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
   const pathName = req.url;
 
+  // overview page
   if (pathName === "/overview" || pathName === "/") {
-    res.end("overview ...");
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });    
+    
+    const cardsHtml = dataObj.map( el => replaceTemplate(tempCard, el)).join('');
+    const output = tempOverview.replace("{%PRODUCT_CARDS%}",cardsHtml);
+    // console.log(cardsHtml);
+    res.end(output);
+    // prodcut page
   } else if (pathName === "/product") {
     res.end("product ...");
+    //  api
   } else if (pathName === "/api") {
-      res.writeHead(200, {
-        "Content-type": "application/json",
-      });
-      res.end(data);
-
+    res.writeHead(200, {
+      "Content-type": "application/json",
+    });
+    res.end(data);
   } else {
-      res.writeHead(404, {
-          'Content-type':'text/html',
-          'my-own-hd': 'hellopas'
-      });
-      res.end('<h1>Page not Found</h1>');
+    res.writeHead(404, {
+      "Content-type": "text/html",
+      "my-own-hd": "hellopas",
+    });
+    res.end("<h1>Page not Found</h1>");
   }
 });
 
