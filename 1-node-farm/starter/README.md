@@ -46,3 +46,9 @@ npm i express
 npm uninstall express
 ```
 
+
+
+### VS code plugins
+
+https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv
+
