@@ -2,6 +2,8 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
+const replaceTemplate = require('./modules/replaceTemplate')
+
 // /////////////////////////////////////////7
 // FILES
 
@@ -30,21 +32,6 @@ const url = require("url");
 // SERVER
 
 // Tutto il codice qui viene eseguito SOLO UNA volta !!!! quindi nessun problema
-const replaceTemplate = function (temp, prodcut) {
-  let output = temp.replace(/{%PRODUCTNAME%}/g, prodcut.productName);
-  output = output.replace(/{%IMAGE%}/g, prodcut.image);
-  output = output.replace(/{%PRICE%}/g, prodcut.price);
-  output = output.replace(/{%FROM%}/g, prodcut.from);
-  output = output.replace(/{%NUTRIENTS%}/g, prodcut.nutrients);
-  output = output.replace(/{%QUANTITY%}/g, prodcut.quantity);
-  output = output.replace(/{%ID%}/g, prodcut.id);
-  output = output.replace(/{%DESCRIPTION%}/g, prodcut.description);
-
-  if (!prodcut.organic)
-    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-
-  return output;
-};
 
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
