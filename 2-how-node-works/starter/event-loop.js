@@ -15,8 +15,10 @@ fs.readFile("test-file.txt", (e, data) => {
 
   process.nextTick(() => console.log("process.nextTick#1"));
 
+  // ATTENTION to use synchronous version
   crypto.pbkdf2Sync("mypassword", "salt", 100000, 1024, "sha512");
   console.log(`${Date.now() - start}ms Password encrypted !!!! pbkdf2Sync`);
+  // ATTENTION to use synchronous version
 
   crypto.pbkdf2("mypassword", "salt", 100000, 1024, "sha512", () => {
     console.log(`${Date.now() - start}ms Password encrypted !!!!`);
