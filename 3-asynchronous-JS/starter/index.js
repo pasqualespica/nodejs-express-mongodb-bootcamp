@@ -39,12 +39,39 @@ const getDogPic = async () => {
     await writeFilePro('dog-img.txt', res.body.message);
     console.log('SALVATO Dajee 🤩 ');
   } catch (error) {
-    console.log(`OOOOOO errore ${error}`);
+    // console.log(`OOOOOO errore ${error}`);
+    throw error;
   }
+  return 'READY ..... 🐶';
 };
 
-// Chiamata ...
-getDogPic();
+// console.log('step ...1');
+// // Chiamata ...
+// // const x = getDogPic();
+// // console.log(x);
+// getDogPic()
+//   .then((ritorno) => {
+//     console.log(ritorno);
+//   })
+//   .catch((err) => {
+//     console.log('Erororororororor !!', err);
+//   });
+// console.log('step ...2');
+
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// INVECE di usare Then/Catch con le Promise come sopra possiamo fare in un altro modo
+// :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+(async () => {
+  try {
+    console.log('1: .....');
+    const x = await getDogPic();
+    console.log(x);
+    console.log('3. Done !!!');
+  } catch (error) {
+    console.log('ERRORE !!', error);
+  }
+})(); // declare and call 1 Anonymous ASYNC funciotn WAAAAAAAOOOOO !!!
 
 // readFilePro(`${__dirname}/dog.txt`)
 //   .then((data) => {
