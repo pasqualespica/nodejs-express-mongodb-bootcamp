@@ -31,12 +31,23 @@ const getDogPic = async () => {
     const data = await readFilePro(`${__dirname}/dog.txt`);
     console.log(`Razza : ${data}`);
 
-    const res = await superagent.get(
+    const res1Pro = superagent.get(
       `https://dog.ceo/api/breed/${data}/images/random`
     );
-    console.log(res.body.message);
+    const res2Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const res3Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
 
-    await writeFilePro('dog-img.txt', res.body.message);
+    const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
+    // console.log(res.body.message);
+    const immagini = all.map((el) => el.body.message);
+    console.log(immagini);
+
+    // await writeFilePro('dog-img.txt', res.body.message);
+    await writeFilePro('dog-img.txt', immagini.join('\n'));
     console.log('SALVATO Dajee 🤩 ');
   } catch (error) {
     // console.log(`OOOOOO errore ${error}`);
