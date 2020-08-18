@@ -11,10 +11,16 @@ const router = express.Router();
 // });
 router.param('id', tourController.checkId);
 
+// Create a checkbody middleware
+// check ig body contains the name and price property
+// if not send back 404 ( bad request )
+// add it to the POST handler stack
+
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.createTour);
+  .post(tourController.checkBodyMiddleware, tourController.createTour);
+
 router
   .route('/:id')
   .get(tourController.getTour)
