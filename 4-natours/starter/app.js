@@ -11,8 +11,8 @@ const app = express();
 // middleware a function that modify INCOMING data
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 app.use(morgan('dev'));
-
 app.use(express.json());
+app.use(express.static(`${__dirname}/public`));
 
 // Our middleware function - and add to middleware stack
 app.use((req, res, next) => {
