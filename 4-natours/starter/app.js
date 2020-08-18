@@ -22,12 +22,36 @@ const tours = JSON.parse(
 );
 
 // routes ....
+
 app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
     data: {
       tours,
+    },
+  });
+});
+
+// ? make optional PARAM
+// app.get('/api/v1/tours/:id/:x/:y?', (req, res) => {
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+  const id = req.params.id * 1; // TRICK to converts string_2_int
+  const tour = tours.find((el) => el.id === id);
+
+  //   if (id > tours.length) {
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
     },
   });
 });
@@ -56,5 +80,5 @@ app.post('/api/v1/tours', (req, res) => {
 
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`App running on port ${PORT} ... and price`);
+  console.log(`App running on port ${PORT} ...`);
 });
