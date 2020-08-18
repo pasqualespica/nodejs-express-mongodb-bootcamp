@@ -74,8 +74,26 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-
   //   res.send(`DONE rx tour name ${req.body.name}!!`);
+});
+
+app.patch('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+  const id = req.params.id * 1; // TRICK to converts string_2_int
+
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<Update tour here ...>',
+    },
+  });
 });
 
 const PORT = 3000;
