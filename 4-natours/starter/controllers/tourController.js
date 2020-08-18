@@ -4,6 +4,19 @@ tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+exports.checkId = (req, res, next, value) => {
+  console.log(`Tour id is ${value}`);
+
+  const id = req.params.id * 1; // TRICK to converts string_2_int
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   console.log(`requestTime ${req.requestTime}`);
   res.status(200).json({
@@ -20,15 +33,6 @@ exports.getTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1; // TRICK to converts string_2_int
   const tour = tours.find((el) => el.id === id);
-
-  //   if (id > tours.length) {
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(200).json({
     status: 'success',
     data: {
@@ -61,14 +65,6 @@ exports.createTour = (req, res) => {
 exports.updateTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1; // TRICK to converts string_2_int
-
-  if (id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(200).json({
     status: 'success',
     data: {
@@ -78,16 +74,6 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  console.log(req.params);
-  const id = req.params.id * 1; // TRICK to converts string_2_int
-
-  if (id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(204).json({
     status: 'success',
     data: null,
