@@ -1,41 +1,47 @@
 const express = require('express');
 const fs = require('fs');
+// https://github.com/expressjs/morgan
+const morgan = require('morgan');
 
 const app = express();
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // middleware a function that modify INCOMING data
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+app.use(morgan('dev'));
+
 app.use(express.json());
+
+// Our middleware function - and add to middleware stack
+app.use((req, res, next) => {
+  console.log('hello from my middleware function ... 👋');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-// app.get('/', (req, res) => {
-//   res.status(200).json({ message: 'Hello !!!!!', app: 'Pasquale' });
-// });
-
-// app.post('/', (req, res) => {
-//   res.status(200).json({ message: 'DAJEEE' });
-// });
-
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// routes ....
-
-app.get('/api/v1/tours', (req, res) => {
+// >>>>>>>>>>>>>>> route handlers
+const getAllTours = (req, res) => {
+  console.log(`requestTime ${req.requestTime}`);
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours,
     },
   });
-});
+};
 
-// ? make optional PARAM
-// app.get('/api/v1/tours/:id/:x/:y?', (req, res) => {
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1; // TRICK to converts string_2_int
   const tour = tours.find((el) => el.id === id);
@@ -54,9 +60,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -75,9 +81,9 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
   //   res.send(`DONE rx tour name ${req.body.name}!!`);
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1; // TRICK to converts string_2_int
 
@@ -94,9 +100,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: '<Update tour here ...>',
     },
   });
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1; // TRICK to converts string_2_int
 
@@ -111,8 +117,29 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: null,
   });
-});
+};
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// routes ....
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+// app.get('/api/v1/tours', getAllTours);
+// ? make optional PARAM
+// app.get('/api/v1/tours/:id/:x/:y?', (req, res) => {
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', createTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
+// >>>>>>>>>>>>>>> server
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT} ...`);
