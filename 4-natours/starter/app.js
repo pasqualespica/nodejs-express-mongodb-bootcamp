@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 // https://github.com/expressjs/morgan
 const morgan = require('morgan');
 
